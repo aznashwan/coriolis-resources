@@ -13,6 +13,7 @@ export BARBICAN_DB_PASSWORD=Passw0rd
 export CORIOLIS_PASSWORD=Passw0rd
 
 
+apt-get install -y software-properties-common
 add-apt-repository cloud-archive:liberty -y
 apt-get update -y
 
