@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+# NOTE: make sure the machine you're running this script on has a static IP
+# set, which you should fill in here:
 HOST_IP=10.14.0.186
 
 export RABBIT_PASSWORD=Passw0rd
@@ -12,6 +14,16 @@ export BARBICAN_PASSWORD=Passw0rd
 export BARBICAN_DB_PASSWORD=Passw0rd
 export CORIOLIS_PASSWORD=Passw0rd
 
+if [ $UID -ne 0 ]; then
+    echo "Script must be run as root."
+    exit 1
+fi
+
+if [ ! -d ./coriolis ]; then
+    echo "Script must be ran in the same directory as the coriolis repo."
+    echo "Please run 'git clone <the coriolis repo>' and try again."
+    exit 2
+fi
 
 add-apt-repository cloud-archive:liberty -y
 apt-get update -y
@@ -212,8 +224,8 @@ GRANT ALL PRIVILEGES ON coriolis.* TO 'coriolis'@'%' \
   IDENTIFIED BY '$CORIOLIS_DB_PASSWORD';
 EOF
 
-# TODO: fix
-su -s /bin/sh -c "python3 coriolis/cmd/db_sync.py"
+# DATABASE PREP:
+python3 coriolis/coriolis/cmd/db_sync.py --config-file=/etc/coriolis/coriolis.conf
 
 cp coriolis/debian/etc/init/* /etc/init
 
